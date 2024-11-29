@@ -25,3 +25,4 @@ __pycache__
 checkpoints
 results
 backup
+.python-version
