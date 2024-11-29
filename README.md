@@ -35,11 +35,10 @@ Parameters with null value (-) will not be included in the generated prompt.
 
 ## Practical Advice
 
-Easy Pony is a helper node that simplifies the process of adding scoring and other attributes to the core when prompting with Pony models. Model selection determines the quality of the images from the prompt. The effectiveness of the parameters depends on the quality of the checkpoint used.
+Easy Pony is a helper node that simplifies the process of adding scoring and other attributes to the core when prompting with Pony models.
+Model selection determines the quality of the images from the prompt. The effectiveness of the parameters depends on the quality of the checkpoint used.
 
-## Notes
 
-The effectiveness of the parameters depends on the quality of the checkpoint used.
 
 ## License
 
