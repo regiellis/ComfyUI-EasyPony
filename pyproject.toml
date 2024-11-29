@@ -1,0 +1,19 @@
+# pyproject.toml
+[project]
+name = "comfyui-easy-pony"
+authors = [
+    {name = "Regi E",email = "regi@bynine.io"}
+]
+description = "Simple node to assits with prompting for Pony models"
+version = "1.0.0"
+
+license = { file = "LICENSE" }
+dependencies  = []
+
+[project.urls]
+Repository = "https://github.com/itsregi/comfyui-easy-pony"
+
+[tool.comfy]
+PublisherId = "_itsjustregi_"
+DisplayName = "Easy Pony"
+Icon = "" 
