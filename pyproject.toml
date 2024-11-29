@@ -11,7 +11,7 @@ license = { file = "LICENSE" }
 dependencies  = []
 
 [project.urls]
-Repository = "https://github.com/itsregi/comfyui-easy-pony"
+Repository = "https://github.com/regiellis/ComfyUI-EasyPony"
 
 [tool.comfy]
 PublisherId = "_itsjustregi_"
