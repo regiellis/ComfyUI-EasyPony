@@ -8,6 +8,9 @@ to simplify the process of adding tscoring other attributes when prompting with 
 > in terms of the quality of the prompts generated.
 
 
+![node](node.png)
+
+
 ## Installation
 
 ### Install from ComfyUI Manager
