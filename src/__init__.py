@@ -1,5 +1,13 @@
+import sys
+from pathlib import Path
 from typing import Dict
 from enum import Enum
+
+
+# COMFYUI IMPORTS
+import comfy.sd
+import folder_paths
+
 
 """
 EasyPony - Resources for implementation of EasyPony prompt sturcture
@@ -9,7 +17,6 @@ EasyPony - Resources for implementation of EasyPony prompt sturcture
 - https://civitai.com/articles/6160/negative-prompt-for-pdxl-v2-works-with-other-models
 
 """
-
 
 class EasyPony:
 
@@ -96,39 +103,109 @@ class EasyPony:
     def __init__(self):
         pass
 
-    @staticmethod
-    def INPUT_TYPES():
+    @classmethod
+    def INPUT_TYPES(cls) -> Dict:
         PSONA_UI_PONY_TOKENS: Dict = {
             "optional": {
-                "prefix": ("STRING", {"forceInput": True}),
-                "suffix": ("STRING", {"forceInput": True}),
+                "prefix": (
+                    "STRING",
+                    {
+                        "forceInput": True,
+                        "tooltip": "Prefix to the prompt. Will replace the quality score.",
+                    },
+                ),
+                "suffix": (
+                    "STRING",
+                    {"forceInput": True, "tooltip": "Suffix to the prompt."},
+                ),
             },
             "required": {
+                "Model": (
+                    folder_paths.get_filename_list("checkpoints"),
+                    {"tooltip": "ONLY USE PONY MODELS HERE."},
+                ),
                 "Quality": (
                     list(EasyPony.PonyTokens.__members__.keys()),
-                    {"default": "EVERYTHING"},
+                    {
+                        "default": "EVERYTHING",
+                        "tooltip": "Quality of the image. i.e GOOD = score7-up",
+                    },
                 ),
-                "Source": (["-"] + EasyPony.SOURCES, {"default": "-"}),
-                "Rating": (["-"] + EasyPony.RATING, {"default": "-"}),
-                "Invert Source (Neg)": ("BOOLEAN", {"default": False}),
-                "Invert Rating (Neg)": ("BOOLEAN", {"default": False}),
+                "Stop at Clip Layer": (
+                    "INT",
+                    {"default": -2, "min": -2, "max": 10, "step": 1},
+                ),
+                "Source": (
+                    ["-"] + EasyPony.SOURCES,
+                    {"default": "-", "tooltip": "Acts as a source filter."},
+                ),
+                "Rating": (
+                    ["-"] + EasyPony.RATING,
+                    {"default": "-", "tooltip": "Acts as a rating filter."},
+                ),
+                "Invert Source (Neg)": (
+                    "BOOLEAN",
+                    {
+                        "default": False,
+                        "tooltip": "Invert the source in the negative prompt.",
+                    },
+                ),
+                "Invert Rating (Neg)": (
+                    "BOOLEAN",
+                    {
+                        "default": False,
+                        "tooltip": "Invert the rating in the negative prompt.",
+                    },
+                ),
                 "Prompt": ("STRING", {"default": EasyPony.DEFAULT, "multiline": True}),
-                "SFW": ("BOOLEAN", {"default": True, "forceInput": False}),
-                "Quality Boost (Beta)": ("BOOLEAN", {"default": False}),
-                "Negative Boost (Beta)": ("BOOLEAN", {"default": False}),
+                "SFW": (
+                    "BOOLEAN",
+                    {"default": True, "forceInput": False, "tooltip": "Safe for Work"},
+                ),
+                "Quality Boost (Beta)": (
+                    "BOOLEAN",
+                    {
+                        "default": False,
+                        "tooltip": "Boost the quality of the image using negative prompts.",
+                    },
+                ),
+                "Negative Boost (Beta)": (
+                    "BOOLEAN",
+                    {
+                        "default": False,
+                        "tooltip": "Boost the negative aspects of the image using negative prompts.",
+                    },
+                ),
             },
         }
 
         return PSONA_UI_PONY_TOKENS
 
-    RETURN_TYPES = ("STRING", "STRING")
-    RETURN_NAMES = ("Prompt", "Negative")
-    OUTPUT_IS_LIST = (False, False)
+    RETURN_TYPES = (
+        "MODEL",
+        "VAE",
+        "CLIP",
+        "STRING",
+        "STRING",
+    )
+    RETURN_NAMES = (
+        "MODEL",
+        "VAE",
+        "CLIP",
+        "PROMPT",
+        "NEGATIVE",
+    )
+    OUTPUT_IS_LIST = (
+        False,
+        False,
+        False,
+        False,
+        False,
+    )
     FUNCTION = "display"
+    CATEGORY = "itsjustregi / Easy Pony"
 
-    CATEGORY = "itsjustregi / EasyPony"
-
-    def display(self, **kwargs):
+    def display(self, **kwargs) -> tuple:
         prompt_elements, negative_elements = [], []
 
         quality_value = (
@@ -173,4 +250,36 @@ class EasyPony:
         final_prompt = " ".join(prompt_elements).lower()
         final_negative = f"{self.NEG} {' '.join(negative_elements)}".lower()
 
-        return (final_prompt, final_negative)
+        clip = kwargs.get("Clip")
+        last_clip_layer = kwargs.get("Stop at Clip Layer")
+        model = self.load_checkpoint(kwargs["Model"])
+        checkpoint = model[0]
+        clip = model[1]
+        vae = model[2]
+
+        modified_clip = self.modify_clip(clip, last_clip_layer)[0]
+
+        return (
+            checkpoint,
+            vae,
+            modified_clip,
+            final_prompt,
+            final_negative,
+        )
+
+    # FROM COMFYUI CORE
+    def modify_clip(self, clip, stop_at_clip_layer) -> tuple:
+        clip = clip.clone()
+        clip.clip_layer(stop_at_clip_layer)
+        return (clip,)
+
+    # FROM COMFYUI CORE
+    def load_checkpoint(self, ckpt_name):
+        ckpt_path = folder_paths.get_full_path_or_raise("checkpoints", ckpt_name)
+        out = comfy.sd.load_checkpoint_guess_config(
+            ckpt_path,
+            output_vae=True,
+            output_clip=True,
+            embedding_directory=folder_paths.get_folder_paths("embeddings"),
+        )
+        return out[:3]
