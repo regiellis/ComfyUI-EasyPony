@@ -16,7 +16,7 @@ class EasyPony:
     class PonyTokens(Enum):
         ONLY_THE_BEST = "score_9, highly detailed"
         GOOD = "score_9, score_8_up, score_7_up, highly detailed"
-        AVERAGE = "score_9, score_8_up, score_7_up, score_6_up"
+        AVERAGE = "score_9, score_8_up, score_7_up, score_6_up, score_5_up, highly detailed"
         EVERYTHING = "score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up, highly detailed"
 
     SOURCES = [
@@ -109,6 +109,8 @@ class EasyPony:
                 ),
                 "Source": (["-"] + EasyPony.SOURCES, {"default": "-"}),
                 "Rating": (["-"] + EasyPony.RATING, {"default": "-"}),
+                "Invert Source (Neg)": ("BOOLEAN", {"default": False}),
+                "Invert Rating (Neg)": ("BOOLEAN", {"default": False}),
                 "Prompt": ("STRING", {"default": EasyPony.DEFAULT, "multiline": True}),
                 "SFW": ("BOOLEAN", {"default": True, "forceInput": False}),
                 "Quality Boost (Beta)": ("BOOLEAN", {"default": False}),
@@ -126,34 +128,35 @@ class EasyPony:
     CATEGORY = "itsjustregi / EasyPony"
 
     def display(self, **kwargs):
+        prompt_elements, negative_elements = [], []
 
-        prompt_elements = []
-        nagative = []
-
-        quality_value = EasyPony.PonyTokens[kwargs["Quality"]].value
+        quality_value = kwargs.get("prefix") or EasyPony.PonyTokens[kwargs["Quality"]].value
         source = "" if kwargs.get("Source") == "-" else kwargs["Source"]
         rating = "" if kwargs.get("Rating") == "-" else kwargs["Rating"]
+        
+        source_invert = kwargs.get("Invert Source (Neg)")
+        rating_invert = kwargs.get("Invert Rating (Neg)")
 
-        if kwargs.get("prefix"):
-            quality_value = kwargs["prefix"]
-
-        quality_value and prompt_elements.append(
-            ", ".join([quality_value, source, rating])
-        )
-
-        kwargs["SFW"] and prompt_elements.append("(sfw:1.2)")
-
+        # Construct prompt elements
+        quality_value and prompt_elements.append(", ".join(filter(None, [
+            quality_value, 
+            f"{source}," if source and not source_invert else "",
+            f"{rating}," if rating and not rating_invert else ""
+        ])).rstrip(','))
+        
+        kwargs["SFW"] and prompt_elements.append("(sfw:1.1),")
         kwargs.get("Prompt") and prompt_elements.append(kwargs["Prompt"])
         kwargs.get("suffix") and prompt_elements.append(kwargs["suffix"])
 
+        # Construct negative elements
+        kwargs["SFW"] and negative_elements.append(self.CENSORSHIP.strip())
+        kwargs["Quality Boost (Beta)"] and negative_elements.append(self.QUALITY_BOOST.strip())
+        kwargs["Negative Boost (Beta)"] and negative_elements.append(self.NEG_EXP.strip())
+
+        rating_invert and negative_elements.insert(0, rating)
+        source_invert and negative_elements.insert(0, source)
+
         final_prompt = " ".join(prompt_elements).lower()
-
-        kwargs["SFW"] and nagative.append(f"{self.CENSORSHIP}".strip())
-        kwargs["Quality Boost (Beta)"] and nagative.append(
-            f"{self.QUALITY_BOOST}".strip()
-        )
-        kwargs["Negative Boost (Beta)"] and nagative.append(f"{self.NEG_EXP}".strip())
-
-        final_negative = self.NEG + " ".join(nagative).lower()
+        final_negative = f"{self.NEG} {' '.join(negative_elements)}".lower()
 
         return (final_prompt, final_negative)
