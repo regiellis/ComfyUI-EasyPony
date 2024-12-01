@@ -1,7 +1,7 @@
 # ComfyUI Easy Pony
 
 > [!WARNING]
-> I have updated the node to be more self-contain and to be more user friendly. As of version 1.2.0 you are able to select you model and alter the last_clip parameter 
+> I have updated the node to be more self-contained and to be more user friendly. As of version 1.2.0 you are able to select a model and alter the last_clip parameter 
 > directly on the node. A invert for source and rating has been added as well, allowing you to filter this content out in the negative direction. Anyone using the previous
 > version of this node will need to update their flows to reflect the changes in the new version.
 
