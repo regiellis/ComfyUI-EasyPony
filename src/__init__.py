@@ -231,7 +231,7 @@ class EasyPony:
             )
         )
 
-        kwargs["SFW"] and prompt_elements.append("(sfw:1.1),")
+        kwargs["SFW"] and prompt_elements.append("(sfw:1.2),")
         kwargs.get("Prompt") and prompt_elements.append(kwargs["Prompt"])
         kwargs.get("suffix") and prompt_elements.append(kwargs["suffix"])
 

@@ -5,7 +5,7 @@ authors = [
     {name = "Regi E",email = "regi@bynine.io"}
 ]
 description = "Simple node to assits with prompting for Pony models"
-version = "1.2.1"
+version = "1.2.2"
 
 license = { file = "LICENSE" }
 dependencies  = []
