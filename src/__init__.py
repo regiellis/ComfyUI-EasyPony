@@ -228,7 +228,7 @@ class EasyPony:
                         f"{rating}," if rating and not rating_invert else "",
                     ],
                 )
-            ).rstrip(",")
+            )
         )
 
         kwargs["SFW"] and prompt_elements.append("(sfw:1.1),")
@@ -244,8 +244,8 @@ class EasyPony:
             self.NEG_EXP.strip()
         )
 
-        rating_invert and negative_elements.insert(0, rating)
-        source_invert and negative_elements.insert(0, source)
+        rating_invert and negative_elements.insert(0, f"{rating},")
+        source_invert and negative_elements.insert(0, f"{source},")
 
         final_prompt = " ".join(prompt_elements).lower()
         final_negative = f"{self.NEG} {' '.join(negative_elements)}".lower()
