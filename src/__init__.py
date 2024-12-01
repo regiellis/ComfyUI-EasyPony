@@ -84,11 +84,10 @@ class EasyPony:
 
     DEFAULT = " ".join(
         [
-            "Raw Photo, Cowboy Shot, yorha no. 2 type b, short white hair, black dress, hairband, black gloves,"
-            "clothing cutout, cleavage cutout, puffy sleeves, long sleeves, black hairband, feather-trimmed sleeves,"
-            "juliet sleeves, mole under mouth, holding katana, black thighhighs, turtleneck, sunset, rubble in the background,"
-            "depth of field, dynamic angle, photo realistic:1.4, realistic skin:1.4, fashion photography,"
-            "sharp, analog film grain, hyperdetailed:1.15"
+            "1girl, autumn, autumn leaves, black sweater, bob cut, brown coat, brown skirt, closed mouth, coat, "
+            "fall background, long sleeves, looking at viewer, medium hair, off shoulder, red eyes, red hair, "
+            "ribbed sweater, skirt, smile, solo, sweater, swept bangs, turtleneck, turtleneck sweater, upper body, "
+            "waving"
         ]
     )
 
