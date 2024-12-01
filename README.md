@@ -1,5 +1,10 @@
 # ComfyUI Easy Pony
 
+> [!WARNING]
+> I have updated the node to be more self-contain and to be more user friendly. As of version 1.2.0 you are able to select you model and alter the last_clip parameter 
+> directly on the node. A invert for source and rating has been added as well, allowing you to filter this content out in the negative direction. Anyone using the previous
+> version of this node will need to update their flows to reflect the changes in the new version.
+
 > [!NOTE]
 > I am not a prolific user of Pony models; This node was created to assist in converting prompts for one of my other custom nodes. YMMV
 > in terms of the quality of the prompts generated.
@@ -24,7 +29,10 @@ EasyPony - Resources for implementation of EasyPony prompt sturcture
  `prefix` - The prefix to use for the prompt, this will replace the quailty score allowing you to use a
  custom score or any string unqiue to the model.
  `suffix` - The suffix to use for the prompt, will be placed at the end of the prompt.
+ `model` - The model to use for the prompt - `Pony` models only
+ `last_clip` - The last clip to use for the prompt, this will be used to determine the quality of the prompt based on the model training data.
  `source and rating` - acts as a filter for the model
+ `invert source and rating` - acts as a filter for the model in the negative direction
  `SFW` - Safe for work, will filter out NSFW content
  `Quailty Boost` - Use negative strings to boost the quality of the prompt
  `Negative Boost` - Use negative strings to boost the negative aspects of the prompt
