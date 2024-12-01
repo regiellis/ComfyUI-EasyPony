@@ -16,7 +16,9 @@ class EasyPony:
     class PonyTokens(Enum):
         ONLY_THE_BEST = "score_9, highly detailed"
         GOOD = "score_9, score_8_up, score_7_up, highly detailed"
-        AVERAGE = "score_9, score_8_up, score_7_up, score_6_up, score_5_up, highly detailed"
+        AVERAGE = (
+            "score_9, score_8_up, score_7_up, score_6_up, score_5_up, highly detailed"
+        )
         EVERYTHING = "score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up, highly detailed"
 
     SOURCES = [
@@ -129,28 +131,41 @@ class EasyPony:
     def display(self, **kwargs):
         prompt_elements, negative_elements = [], []
 
-        quality_value = kwargs.get("prefix") or EasyPony.PonyTokens[kwargs["Quality"]].value
+        quality_value = (
+            kwargs.get("prefix") or EasyPony.PonyTokens[kwargs["Quality"]].value
+        )
         source = "" if kwargs.get("Source") == "-" else kwargs["Source"]
         rating = "" if kwargs.get("Rating") == "-" else kwargs["Rating"]
-        
+
         source_invert = kwargs.get("Invert Source (Neg)")
         rating_invert = kwargs.get("Invert Rating (Neg)")
 
         # Construct prompt elements
-        quality_value and prompt_elements.append(", ".join(filter(None, [
-            quality_value, 
-            f"{source}," if source and not source_invert else "",
-            f"{rating}," if rating and not rating_invert else ""
-        ])).rstrip(','))
-        
+        quality_value and prompt_elements.append(
+            ", ".join(
+                filter(
+                    None,
+                    [
+                        quality_value,
+                        f"{source}," if source and not source_invert else "",
+                        f"{rating}," if rating and not rating_invert else "",
+                    ],
+                )
+            ).rstrip(",")
+        )
+
         kwargs["SFW"] and prompt_elements.append("(sfw:1.1),")
         kwargs.get("Prompt") and prompt_elements.append(kwargs["Prompt"])
         kwargs.get("suffix") and prompt_elements.append(kwargs["suffix"])
 
         # Construct negative elements
         kwargs["SFW"] and negative_elements.append(self.CENSORSHIP.strip())
-        kwargs["Quality Boost (Beta)"] and negative_elements.append(self.QUALITY_BOOST.strip())
-        kwargs["Negative Boost (Beta)"] and negative_elements.append(self.NEG_EXP.strip())
+        kwargs["Quality Boost (Beta)"] and negative_elements.append(
+            self.QUALITY_BOOST.strip()
+        )
+        kwargs["Negative Boost (Beta)"] and negative_elements.append(
+            self.NEG_EXP.strip()
+        )
 
         rating_invert and negative_elements.insert(0, rating)
         source_invert and negative_elements.insert(0, source)
